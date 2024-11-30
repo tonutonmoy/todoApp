@@ -1,11 +1,8 @@
-import { Prisma, User } from "@prisma/client";
-import * as bcrypt from "bcrypt";
-import prisma from "../../../shared/prisma";
-import { IPaginationOptions } from "../../interface/pagination.type";
-import { calculatePagination } from "../../utils/calculatePagination";
-import { IUserFilterRequest } from "./user.interface";
+import { User } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
+import prisma from '../../utils/prisma';
 
-interface UserWithOptionalPassword extends Omit<User, "password"> {
+interface UserWithOptionalPassword extends Omit<User, 'password'> {
   password?: string;
 }
 
@@ -149,17 +146,17 @@ const changePassword = async (user: any, payload: any) => {
   const userData = await prisma.user.findUniqueOrThrow({
     where: {
       email: user.email,
-      status: "ACTIVATE",
+      status: 'ACTIVATE',
     },
   });
 
   const isCorrectPassword: boolean = await bcrypt.compare(
     payload.oldPassword,
-    userData.password
+    userData.password,
   );
 
   if (!isCorrectPassword) {
-    throw new Error("Password incorrect!");
+    throw new Error('Password incorrect!');
   }
 
   const hashedPassword: string = await bcrypt.hash(payload.newPassword, 12);
@@ -174,16 +171,16 @@ const changePassword = async (user: any, payload: any) => {
   });
 
   return {
-    message: "Password changed successfully!",
+    message: 'Password changed successfully!',
   };
 };
 
-export const userService = {
+export const UserServices = {
   registerUserIntoDB,
   getAllUsersFromDB,
   getMyProfileFromDB,
   getUserDetailsFromDB,
   updateMyProfileIntoDB,
   updateUserRoleStatusIntoDB,
-  changePassword
+  changePassword,
 };

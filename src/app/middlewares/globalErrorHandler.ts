@@ -25,7 +25,7 @@ const globalErrorHandler = (
     errorDetails = simplifiedError?.errorDetails;
   } else if (err?.code === "P2002") {
     // Handle Prisma Duplicate entity error
-    statusCode = 400;
+    statusCode = 409;
     message = `Duplicate entity on the fields ${err.meta.target.map(
       (field: string) => field
     )}`;
