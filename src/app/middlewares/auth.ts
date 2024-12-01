@@ -1,10 +1,10 @@
-import { NextFunction, Request, Response } from "express";
-import httpStatus from "http-status";
-import { Secret } from "jsonwebtoken";
-import config from "../../config";
-import prisma from "../../shared/prisma";
-import AppError from "../errors/AppError";
-import { verifyToken } from "../utils/verifyToken";
+import { NextFunction, Request, Response } from 'express';
+import httpStatus from 'http-status';
+import { Secret } from 'jsonwebtoken';
+import config from '../../config';
+import AppError from '../errors/AppError';
+import prisma from '../utils/prisma';
+import { verifyToken } from '../utils/verifyToken';
 
 const auth = (...roles: string[]) => {
   return async (req: Request, _res: Response, next: NextFunction) => {
@@ -12,12 +12,12 @@ const auth = (...roles: string[]) => {
       const token = req.headers.authorization;
 
       if (!token) {
-        throw new AppError(httpStatus.UNAUTHORIZED, "You are not authorized!");
+        throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
       }
 
       const verifyUserToken = verifyToken(
         token,
-        config.jwt.access_secret as Secret
+        config.jwt.access_secret as Secret,
       );
 
       // Check user is exist
@@ -28,12 +28,12 @@ const auth = (...roles: string[]) => {
       });
 
       if (!user) {
-        throw new AppError(httpStatus.UNAUTHORIZED, "You are not authorized!");
+        throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
       }
 
       req.user = verifyUserToken;
       if (roles.length && !roles.includes(verifyUserToken.role)) {
-        throw new AppError(httpStatus.FORBIDDEN, "Forbidden!");
+        throw new AppError(httpStatus.FORBIDDEN, 'Forbidden!');
       }
       next();
     } catch (error) {
