@@ -123,7 +123,6 @@ export default class Email {
   }
 
   //Send the actual email
-
   async send(template: string, subject: string) {
     //01. Render HTML using the PUG template from the arguments
     const html = template;
@@ -136,7 +135,8 @@ export default class Email {
     };
     //03. Create a transporter and send the mail
     await this.newTransport().sendMail(mailOptions);
-  }async sendEmailVerificationLink(subject: string, link: string) {
+  }
+  async sendEmailVerificationLink(subject: string, link: string) {
     const html = `<!DOCTYPE html>
     <html>
     <head>
@@ -155,22 +155,23 @@ export default class Email {
       </div>
     </body>
     </html>`;
-  
+
     const mailOptions = {
       from: this.from,
       to: this.to,
       subject,
       html,
     };
-  
+
     await this.newTransport().sendMail(mailOptions);
   }
-  
 
   async sendWelcome() {
     await this.send('welcome', 'Welcome to XYZ');
   }
-
+  /* 
+send email for password reset
+*/
   async sendPasswordReset(OTP: string) {
     const html = `<!DOCTYPE html>
 <html lang="en">
