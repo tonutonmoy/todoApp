@@ -49,12 +49,8 @@ export const uploadToDigitalOceanAWS = async (
     // Construct the direct URL to the uploaded file
     const Location = `${process.env.DO_SPACE_ENDPOINT}/${process.env.DO_SPACE_BUCKET}/${file.originalname}`;
 
-    // Delete the file locally after upload
-    await fs.promises.unlink(file.path);
-
     return { Location };
   } catch (error) {
-    await fs.promises.unlink(file.path);
     // eslint-disable-next-line no-console
     console.error(`Error uploading file: ${file.path}`, error);
     throw error;
