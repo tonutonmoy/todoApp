@@ -70,9 +70,15 @@ const globalErrorHandler = (
     message = err.message;
     errorDetails = { stack: err.stack };
   } else if (err instanceof Error) {
+    if (err.name === 'TokenExpiredError') {
+      statusCode = 401;
+      message = 'Expired token';
+      errorDetails = { stack: err.stack };
+    }
+  } else if (err instanceof Error) {
     // Handle generic Error
     message = err.message;
-    errorDetails = { stack: err.stack };
+    errorDetails = { err, stack: err.stack };
   }
 
   res.status(statusCode).json({
