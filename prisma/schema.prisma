@@ -6,40 +6,40 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id           String       @id @default(uuid()) 
-  name         String
-  email        String       @unique
-  password     String
-  role         UserRoleEnum @default(USER)
-  status       UserStatus   @default(ACTIVATE)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  profile  Profile?
+  id        String       @id @default(auto()) @map("_id") @db.ObjectId
+  firstName String
+  lastName  String
+  email     String       @unique
+  password  String
+  role      UserRoleEnum @default(USER)
+  status    UserStatus   @default(ACTIVATE)
+
+  otp       String?
+  otpExpiry DateTime?
+
+  isEmailVerified               Boolean   @default(false)
+  emailVerificationToken        String?
+  emailVerificationTokenExpires DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("users")
 }
 
-model Profile {
-  id               String   @id @default(uuid())
-  userId           String   @unique
-  bio              String?
-  age              Int
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id])
-}
-
-
 enum UserRoleEnum {
   USER
-  ADMIN
   SUPERADMIN
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
 }
 
 enum UserStatus {

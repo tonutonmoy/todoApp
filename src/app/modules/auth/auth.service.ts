@@ -5,6 +5,7 @@ import config from '../../../config';
 import AppError from '../../errors/AppError';
 import { generateToken } from '../../utils/generateToken';
 import prisma from '../../utils/prisma';
+import { UserServices } from '../User/user.service';
 
 const loginUserFromDB = async (payload: {
   email: string;
@@ -23,11 +24,15 @@ const loginUserFromDB = async (payload: {
   if (!isCorrectPassword) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Password incorrect');
   }
+  if (!userData.isEmailVerified) {
+    await UserServices.resendUserVerificationEmail(userData.email);
+    throw new AppError(httpStatus.BAD_REQUEST, 'Email is not verified');
+  }
 
   const accessToken = await generateToken(
     {
       id: userData.id,
-      name: userData.name,
+      name: userData.firstName + ' ' + userData.lastName,
       email: userData.email,
       role: userData.role,
     },
@@ -36,7 +41,7 @@ const loginUserFromDB = async (payload: {
   );
   return {
     id: userData.id,
-    name: userData.name,
+    name: userData.firstName + ' ' + userData.lastName,
     email: userData.email,
     role: userData.role,
     accessToken: accessToken,

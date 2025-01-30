@@ -1,48 +1,23 @@
-import z from "zod";
+import z from 'zod';
 const registerUser = z.object({
   body: z.object({
-    name: z.string({
-      required_error: "Name is required!",
+    firstName: z.string({
+      required_error: 'First Name is required!',
+    }),
+    lastName: z.string({
+      required_error: 'Last Name is required!',
     }),
     email: z
       .string({
-        required_error: "Email is required!",
+        required_error: 'Email is required!',
       })
       .email({
-        message: "Invalid email format!",
+        message: 'Invalid email format!',
       }),
     password: z.string({
-      required_error: "Password is required!",
-    }),
-
-    age: z.number().int({
-      message: "Age must be an integer!",
-    }),
-    bio: z.string({
-      required_error: "Bio is required!",
+      required_error: 'Password is required!',
     }),
   }),
 });
 
-const updateProfileSchema = z.object({
-  body: z.object({
-    age: z
-      .number()
-      .int({
-        message: "Age must be an integer!",
-      })
-      .optional(),
-    bio: z
-      .string({
-        required_error: "Bio is required!",
-      })
-      .optional(),
-    lastDonationDate: z
-      .string({
-        required_error: "Last donation date is required!",
-      })
-      .optional(),
-  }),
-});
-
-export const UserValidations = { registerUser, updateProfileSchema };
+export const UserValidations = { registerUser };

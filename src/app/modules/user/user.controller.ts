@@ -1,14 +1,15 @@
 import httpStatus from 'http-status';
-import { UserServices } from './user.service';
-import sendResponse from '../../utils/sendResponse';
 import catchAsync from '../../utils/catchAsync';
+import sendResponse from '../../utils/sendResponse';
+import { UserServices } from './user.service';
 
 const registerUser = catchAsync(async (req, res) => {
   const result = await UserServices.registerUserIntoDB(req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
-    message: 'User registered successfully',
+    message:
+      'User registered successfully. Please check your email for the verification link.',
     data: result,
   });
 });
@@ -20,6 +21,27 @@ const getAllUsers = catchAsync(async (req, res) => {
     statusCode: httpStatus.CREATED,
     message: 'Users Retrieve successfully',
     data: result,
+  });
+});
+
+const resendUserVerificationEmail = catchAsync(async (req, res) => {
+  const { email } = req.body;
+  const result = await UserServices.resendUserVerificationEmail(email);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'Verification email sent successfully',
+    data: result,
+  });
+});
+
+const verifyUserEmail = catchAsync(async (req, res) => {
+  const { token } = req.params;
+  const verifiedUser = await UserServices.verifyUserEmail(token);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'User verified successfully.',
+    data: verifiedUser,
   });
 });
 
@@ -86,4 +108,6 @@ export const UserControllers = {
   updateMyProfile,
   updateUserRoleStatus,
   changePassword,
+  resendUserVerificationEmail,
+  verifyUserEmail,
 };

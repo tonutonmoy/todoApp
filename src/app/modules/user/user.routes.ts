@@ -11,6 +11,11 @@ router.post(
   UserControllers.registerUser,
 );
 
+router.post(
+  '/resend-verification-email',
+  UserControllers.resendUserVerificationEmail,
+);
+
 router.get('/', UserControllers.getAllUsers);
 
 router.get('/me', auth('USER', 'ADMIN'), UserControllers.getMyProfile);
@@ -21,6 +26,7 @@ router.put(
   auth('USER', 'ADMIN'),
   UserControllers.updateMyProfile,
 );
+router.patch('/verify-email/:token', UserControllers.verifyUserEmail);
 
 router.put(
   '/update-user/:id',
