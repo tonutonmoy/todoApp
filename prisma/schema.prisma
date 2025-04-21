@@ -17,7 +17,7 @@ model User {
   email     String       @unique
   password  String
   role      UserRoleEnum @default(USER)
-  status    UserStatus   @default(ACTIVATE)
+  status    UserStatus   @default(ACTIVE)
 
   otp       String?
   otpExpiry DateTime?
@@ -43,7 +43,7 @@ enum ProductStatus {
 }
 
 enum UserStatus {
-  ACTIVATE
-  INACTIVATE
+  ACTIVE
+  INACTIVE
   BLOCKED
 }

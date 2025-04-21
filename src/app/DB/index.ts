@@ -7,8 +7,9 @@ const superAdminData = {
   firstName: 'Super',
   lastName: 'Admin',
   email: 'admin@gmail.com',
-  password: '',
+  password: '123456',
   role: UserRoleEnum.SUPERADMIN,
+  isEmailVerified: true,
 };
 
 const seedSuperAdmin = async () => {

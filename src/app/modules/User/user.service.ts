@@ -1,10 +1,17 @@
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { Response } from 'express';
 import httpStatus from 'http-status';
+import config from '../../../config';
+import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../errors/AppError';
 import { verification } from '../../errors/helpers/generateEmailVerificationLink';
 import prisma from '../../utils/prisma';
 import Email from '../../utils/sendMail';
+import {
+  failedEmailVerificationHTML,
+  successEmailVerificationHTML,
+} from './user.constant';
 
 interface UserWithOptionalPassword extends Omit<User, 'password'> {
   password?: string;
@@ -29,21 +36,20 @@ const registerUserIntoDB = async (payload: User) => {
   return userWithOptionalPassword;
 };
 
-const getAllUsersFromDB = async () => {
-  const result = await prisma.user.findMany({
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      email: true,
-      role: true,
-      status: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
+const getAllUsersFromDB = async (query: any) => {
+  const usersQuery = new QueryBuilder(prisma.user, query);
+  const result = await usersQuery
+    .search(['firstName', 'lastName', 'email'])
+    .filter()
+    .sort()
+    .paginate()
+    .execute();
+  const pagination = await usersQuery.countTotal();
 
-  return result;
+  return {
+    meta: pagination,
+    result,
+  };
 };
 
 const getMyProfileFromDB = async (id: string) => {
@@ -169,6 +175,7 @@ const resendUserVerificationEmail = async (email: string) => {
       emailVerificationTokenExpires: new Date(Date.now() + 3600 * 1000),
     },
   });
+
   const emailSender = new Email(user);
   await emailSender.sendEmailVerificationLink(
     'Email verification link',
@@ -177,7 +184,7 @@ const resendUserVerificationEmail = async (email: string) => {
   return user;
 };
 
-const verifyUserEmail = async (token: string) => {
+const verifyUserEmail = async (res: Response, token: string) => {
   const hashedToken = verification.generateHashedToken(token);
   const user = await prisma.user.findFirst({
     where: {
@@ -186,12 +193,17 @@ const verifyUserEmail = async (token: string) => {
   });
 
   if (!user) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'Invalid email verification token.',
-    );
+    // throw new AppError(
+    //   httpStatus.BAD_REQUEST,
+    //   'Invalid email verification token.',
+    // );
+
+    res.send(failedEmailVerificationHTML(config.base_url_client as string));
+    return;
   }
+
   if (
+    user &&
     user.emailVerificationTokenExpires &&
     user.emailVerificationTokenExpires < new Date(Date.now())
   ) {
@@ -208,6 +220,12 @@ const verifyUserEmail = async (token: string) => {
       emailVerificationTokenExpires: null,
     },
   });
+
+  if (updatedUser.isEmailVerified) {
+    res.send(successEmailVerificationHTML());
+    return updatedUser;
+  }
+
   return updatedUser;
 };
 

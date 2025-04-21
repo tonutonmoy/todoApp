@@ -15,7 +15,7 @@ const registerUser = catchAsync(async (req, res) => {
 });
 
 const getAllUsers = catchAsync(async (req, res) => {
-  const result = await UserServices.getAllUsersFromDB();
+  const result = await UserServices.getAllUsersFromDB(req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -36,7 +36,7 @@ const resendUserVerificationEmail = catchAsync(async (req, res) => {
 
 const verifyUserEmail = catchAsync(async (req, res) => {
   const { token } = req.params;
-  const verifiedUser = await UserServices.verifyUserEmail(token);
+  const verifiedUser = await UserServices.verifyUserEmail(res, token);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

@@ -26,7 +26,7 @@ router.put(
   auth('USER', 'ADMIN'),
   UserControllers.updateMyProfile,
 );
-router.patch('/verify-email/:token', UserControllers.verifyUserEmail);
+router.get('/verify-email/:token', UserControllers.verifyUserEmail);
 
 router.put(
   '/update-user/:id',

@@ -26,7 +26,10 @@ const loginUserFromDB = async (payload: {
   }
   if (!userData.isEmailVerified) {
     await UserServices.resendUserVerificationEmail(userData.email);
-    throw new AppError(httpStatus.BAD_REQUEST, 'Email is not verified');
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Email is not verified, Please check your email for the verification link.',
+    );
   }
 
   const accessToken = await generateToken(
