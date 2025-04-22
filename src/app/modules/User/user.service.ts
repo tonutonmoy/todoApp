@@ -135,7 +135,7 @@ const changePassword = async (user: any, payload: any) => {
   const userData = await prisma.user.findUniqueOrThrow({
     where: {
       email: user.email,
-      status: 'ACTIVATE',
+      status: 'ACTIVE',
     },
   });
 
