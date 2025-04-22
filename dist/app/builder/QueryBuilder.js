@@ -84,7 +84,12 @@ class QueryBuilder {
         const fields = ((_a = this.query.fields) === null || _a === void 0 ? void 0 : _a.split(',')) || [];
         if (fields.length > 0) {
             this.prismaQuery.select = fields.reduce((acc, field) => {
-                acc[field] = true;
+                if (field.startsWith('-')) {
+                    acc[field.slice(1)] = false;
+                }
+                else {
+                    acc[field] = true;
+                }
                 return acc;
             }, {});
         }
