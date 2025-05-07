@@ -1,6 +1,9 @@
 import z from 'zod';
 const registerUser = z.object({
   body: z.object({
+    userId: z.string({
+      required_error: 'Title is required!',
+    }),
     title: z.string({
       required_error: 'Title is required!',
     }),

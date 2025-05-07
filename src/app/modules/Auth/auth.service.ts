@@ -16,6 +16,8 @@ const loginUserFromDB = async (payload: {
       email: payload.email,
     },
   });
+
+ 
   const isCorrectPassword: Boolean = await bcrypt.compare(
     payload.password,
     userData.password,
@@ -24,13 +26,13 @@ const loginUserFromDB = async (payload: {
   if (!isCorrectPassword) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Password incorrect');
   }
-  if (!userData.isEmailVerified) {
-    await UserServices.resendUserVerificationEmail(userData.email);
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'Email is not verified, Please check your email for the verification link.',
-    );
-  }
+  // if (!userData.isEmailVerified) {
+  //   await UserServices.resendUserVerificationEmail(userData.email);
+  //   throw new AppError(
+  //     httpStatus.BAD_REQUEST,
+  //     'Email is not verified, Please check your email for the verification link.',
+  //   );
+  // }
 
   const accessToken = await generateToken(
     {

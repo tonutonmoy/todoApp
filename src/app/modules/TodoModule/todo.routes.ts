@@ -13,18 +13,18 @@ router.post(
 );
 
 
-router.get('/', TodoControllers.getAllTodos);
+router.get('/:id', TodoControllers.getAllTodos);
 
 
 router.put(
-  '/',
+  '/:id',
 
   TodoControllers.updateTodo,
 );
 
 
 router.delete(
-  '/',
+  '/:id',
  
   TodoControllers.deleteTodo,
 );

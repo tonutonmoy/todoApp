@@ -15,18 +15,22 @@ const createTodoIntoDB = async (payload: ITodo|any) => {
   return result;
 };
 
-// Get all Todos by User ID (note: userId is not a unique field, so use `findMany`)
 const getTodosFromDB = async (userId: string) => {
   const result = await prisma.todo.findMany({
     where: {
       userId: userId,
     },
+    include: {
+      user: true, // Assumes a relation named 'user' is defined in your Prisma schema
+    },
   });
   return result;
 };
 
+
 // Update a Todo by its ID
 const updateTodoFromDB = async (id: string, payload: Partial<ITodo>) => {
+  
   const result = await prisma.todo.update({
     where: { id },
     data: payload,
