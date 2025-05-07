@@ -22,7 +22,7 @@ model User {
   otp       String?
   otpExpiry DateTime?
 
-  isEmailVerified               Boolean   @default(false)
+  isEmailVerified               Boolean   @default(true)
   emailVerificationToken        String?
   emailVerificationTokenExpires DateTime?
 

@@ -29,7 +29,7 @@ const registerUserIntoDB = async (payload: User) => {
     },
   });
 
-  await resendUserVerificationEmail(newUser.email);
+  // await resendUserVerificationEmail(newUser.email);
   const userWithOptionalPassword = newUser as UserWithOptionalPassword;
   delete userWithOptionalPassword.password;
 
