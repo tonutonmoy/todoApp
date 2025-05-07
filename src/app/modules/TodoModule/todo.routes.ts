@@ -7,24 +7,24 @@ import { TodoControllers } from './todo.controller';
 const router = express.Router();
 
 router.post(
-  '/',
+  '/',auth(),
   validateRequest(UserValidations.registerUser),
   TodoControllers.crerateTodo,
 );
 
 
-router.get('/:id', TodoControllers.getAllTodos);
+router.get('/',auth(), TodoControllers.getAllTodos);
 
 
 router.put(
   '/:id',
 
-  TodoControllers.updateTodo,
+  auth(),TodoControllers.updateTodo,
 );
 
 
 router.delete(
-  '/:id',
+  '/:id',auth(),
  
   TodoControllers.deleteTodo,
 );

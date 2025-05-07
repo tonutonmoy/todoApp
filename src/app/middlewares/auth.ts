@@ -31,7 +31,7 @@ const auth = (...roles: string[]) => {
         throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
       }
 
-      req.user = verifyUserToken;
+      req.user = {userId:verifyUserToken.id,verifyUserToken};
       if (roles.length && !roles.includes(verifyUserToken.role)) {
         throw new AppError(httpStatus.FORBIDDEN, 'Forbidden!');
       }

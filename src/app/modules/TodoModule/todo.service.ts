@@ -9,6 +9,7 @@ import { ITodo } from './todo.interface';
 
 // Create a Todo
 const createTodoIntoDB = async (payload: ITodo|any) => {
+  console.log(payload,'hello')
   const result = await prisma.todo.create({
     data: payload,
   });
@@ -17,11 +18,11 @@ const createTodoIntoDB = async (payload: ITodo|any) => {
 
 const getTodosFromDB = async (userId: string) => {
   const result = await prisma.todo.findMany({
-    where: {
-      userId: userId,
+    where:{
+      userId: userId
     },
     include: {
-      user: true, // Assumes a relation named 'user' is defined in your Prisma schema
+      user: true,
     },
   });
   return result;
