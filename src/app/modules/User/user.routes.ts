@@ -40,4 +40,10 @@ router.post(
   UserControllers.changePassword,
 );
 
+
+
+router.post('/reset-password/send-otp', UserControllers.sendResetOtp);
+router.post('/reset-password/verify-otp', UserControllers.resetPasswordWithOtp);
+
+
 export const UserRouters = router;

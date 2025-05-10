@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,46 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String       @id @default(auto()) @map("_id") @db.ObjectId
-  firstName String
-  lastName  String
-  email     String       @unique
-  password  String
-  role      UserRoleEnum @default(USER)
-  status    UserStatus   @default(ACTIVE)
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  MIXED
+  ANY
 
-  otp       String?
-  otpExpiry DateTime?
-
-  isEmailVerified               Boolean   @default(true)
-  emailVerificationToken        String?
-  emailVerificationTokenExpires DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-    todos     Todo[]
-
-  @@map("users")
-}
-model Todo {
-  id        String       @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  description  String
- 
-
-
-
-  isShowing              Boolean   @default(false)
-  
-
-  userId      String   @db.ObjectId
-  user        User     @relation(fields: [userId], references: [id])
-  @@map("todos")
 }
 
 
 
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+  EXPIRED
+}
+
+enum ListingStatus {
+  PUBLISHED
+  EXPIRED
+}
 
 enum UserRoleEnum {
   USER
@@ -65,4 +45,173 @@ enum UserStatus {
   ACTIVE
   INACTIVE
   BLOCKED
+}
+
+model User {
+  id                          String            @id @default(auto()) @map("_id") @db.ObjectId
+  firstName                   String 
+        
+  lastName                     String
+  surname                      String?
+  email                       String            @unique
+  password                    String
+  role                        UserRoleEnum      @default(USER)
+  status                      UserStatus        @default(ACTIVE)
+  otp                         String?
+  otpExpiry                   DateTime?
+  isEmailVerified             Boolean           @default(true)
+  rememberMe                  Boolean?           @default(true)
+  emailVerificationToken      String?
+  emailVerificationTokenExpires DateTime?
+  birthDate                   DateTime?
+  gender                      Gender?
+  language                    String?
+  school                     String?
+  profilePicture              String?
+  biography                   String?
+  aboutMe                     String[]         
+  instagram                   String?
+  phoneNumber                 String?
+  createdAt                   DateTime          @default(now())
+  updatedAt                   DateTime          @updatedAt
+  termsAndConditions          Boolean?
+  bio                         String?
+
+  listings                    Listing[]
+  requestsSent                Request[]
+  roommates                   Roommate[]
+  savedListings               Saved[]
+  userInterests               UserInterest[]
+}
+
+model Interest {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  name            String          @unique
+  userInterests   UserInterest[]
+}
+
+model UserInterest {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String
+  interestId String
+
+  user       User     @relation(fields: [userId], references: [id])
+  interest   Interest @relation(fields: [interestId], references: [id])
+}
+
+model Listing {
+  id                           String           @id @default(auto()) @map("_id") @db.ObjectId
+  title                        String
+  preview                      String
+  description                  String
+  rentCHF                      Int
+  expensesIncluded             Boolean          @default(true)
+  extraExpenses                String[]
+  availableFrom                DateTime
+  availableUntil               DateTime?
+  rooms                        Float
+  bathrooms                    Int
+  size                         Int?
+  floor                        Int?
+  address                      String
+  streatAndNo                  String
+  postalCode                   String
+  city                         String
+  latitude                     Float
+  longitude                    Float
+  radiusKm                     Int
+  photos                       String[]
+  videoUrl                     String?
+  status                       ListingStatus     @default(PUBLISHED)
+  createdAt                    DateTime          @default(now())
+  expiresAt                    DateTime?
+  available                    String
+  additionalExpenseIncluded    Boolean
+  roommateAgeMin               Int?
+  roommateAgeMax               Int?
+  roommateLanguages            String[]
+  roommateGender               Gender?
+  spaceAndAppliances           String[]
+  comfortAndLeisure            String[]
+  accessAndMobility           String[]
+  houseAtmosphere              String
+  externalGuestsAllowed        String
+  smokingAllowedInOutdoorAreas String
+  cleaningScheduleDefined      String
+  currentlyHavePets            String
+  newPetsAllowed               String
+  cookingWithRoommates         String
+  dinnerWithRoommates          String
+  spendingFreeTimeWithRoommates String
+  language                     String
+  age                          String
+
+  ownerId         String
+  owner           User             @relation(fields: [ownerId], references: [id])
+  roommates       Roommate[]
+  requests        Request[]
+  savedBy         Saved[]
+  listingAmenities ListingAmenity[]
+  listingRules     ListingRule[]
+}
+
+model Amenity {
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  name             String            @unique
+  listingAmenities ListingAmenity[]
+}
+
+model ListingAmenity {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  listingId  String
+  amenityId  String
+
+  listing    Listing  @relation(fields: [listingId], references: [id])
+  amenity    Amenity  @relation(fields: [amenityId], references: [id])
+}
+
+model LifestyleRule {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  name         String         @unique
+  listingRules ListingRule[]
+}
+
+model ListingRule {
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+  listingId       String
+  lifestyleRuleId String
+
+  listing         Listing        @relation(fields: [listingId], references: [id])
+  lifestyleRule   LifestyleRule  @relation(fields: [lifestyleRuleId], references: [id])
+}
+
+model Roommate {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+  listingId String
+  isLeaving Boolean  @default(false)
+
+  user      User     @relation(fields: [userId], references: [id])
+  listing   Listing  @relation(fields: [listingId], references: [id])
+}
+
+model Request {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  listingId   String
+  senderId    String
+  status      RequestStatus @default(PENDING)
+  createdAt   DateTime      @default(now())
+  respondedAt DateTime?
+
+  listing     Listing       @relation(fields: [listingId], references: [id])
+  sender      User          @relation(fields: [senderId], references: [id])
+}
+
+model Saved {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String
+  listingId String
+
+  user      User     @relation(fields: [userId], references: [id])
+  listing   Listing  @relation(fields: [listingId], references: [id])
 }

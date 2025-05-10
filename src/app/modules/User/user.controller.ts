@@ -102,6 +102,31 @@ const changePassword = catchAsync(async (req, res) => {
   });
 });
 
+
+
+const sendResetOtp = catchAsync(async (req, res) => {
+  const { email } = req.body;
+  const result = await UserServices.sendPasswordResetOtp(email);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'OTP sent successfully to your email address.',
+    data: result,
+  });
+});
+
+const resetPasswordWithOtp = catchAsync(async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+  const result = await UserServices.verifyOtpAndResetPassword(email, otp, newPassword);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'Password reset successfully.',
+    data: result,
+  });
+});
+
+
 export const UserControllers = {
   registerUser,
   getAllUsers,
@@ -112,4 +137,6 @@ export const UserControllers = {
   changePassword,
   resendUserVerificationEmail,
   verifyUserEmail,
+  sendResetOtp,
+  resetPasswordWithOtp
 };

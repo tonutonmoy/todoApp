@@ -18,4 +18,8 @@ export default {
     refresh_secret: process.env.JWT_REFRESH_SECRET,
     refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN,
   },
+  email_host: process.env.MAILTRAP_HOST,
+  email_port: process.env.MAILTRAP_PORT,
+  email_user: process.env.MAILTRAP_USER,
+  email_pass: process.env.MAILTRAP_PASSWORD,
 };

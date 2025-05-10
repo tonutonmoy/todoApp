@@ -1,4 +1,35 @@
-export interface IUserFilterRequest {
-  name?: string | undefined;
-  email?: string | undefined;
+  export interface IUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  surname?: string;
+  email: string;
+  password: string;
+  role: 'USER' | 'SUPERADMIN';
+  status: 'ACTIVE' | 'INACTIVE' | 'BLOCKED';
+  otp?: string;
+  otpExpiry?: Date;
+  isEmailVerified: boolean;
+  rememberMe?: boolean;
+  emailVerificationToken?: string;
+  emailVerificationTokenExpires?: Date;
+  birthDate?: Date;
+  gender?: 'MALE' | 'FEMALE' | 'OTHER' | 'MIXED' | 'ANY';
+  language?: string;
+  school?: string;
+  profilePicture?: string;
+  biography?: string;
+  aboutMe: string[];
+  instagram?: string;
+  phoneNumber?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  termsAndConditions?: boolean;
+
+  // relations (can be IDs or full objects depending on use case)
+  listings?: any[];
+  requestsSent?: any[];
+  roommates?: any[];
+  savedListings?: any[];
+  userInterests?: any[];
 }

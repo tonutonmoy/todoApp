@@ -12,12 +12,13 @@ import {
   failedEmailVerificationHTML,
   successEmailVerificationHTML,
 } from './user.constant';
+import { IUser } from './user.interface';
 
 interface UserWithOptionalPassword extends Omit<User, 'password'> {
   password?: string;
 }
 
-const registerUserIntoDB = async (payload: User) => {
+const registerUserIntoDB = async (payload: IUser|any) => {
   const hashedPassword: string = await bcrypt.hash(payload.password, 12);
   const userData = {
     ...payload,
@@ -229,6 +230,70 @@ const verifyUserEmail = async (res: Response, token: string) => {
   return updatedUser;
 };
 
+
+// Generate OTP and send to user's email
+const sendPasswordResetOtp = async (email: string) => {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found with this email');
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+  const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+  await prisma.user.update({
+    where: { email },
+    data: {
+      otp,
+      otpExpiry,
+    },
+  });
+
+  const emailSender = new Email(user);
+  await emailSender.sendCustomEmail(
+    'Your Password Reset OTP',
+    `Your password reset code is <b>${otp}</b>. It will expire in 10 minutes.`,
+  );
+
+  return { message: 'OTP sent to your email address.' };
+};
+
+// Verify OTP and reset password
+const verifyOtpAndResetPassword = async (
+  email: string,
+  otp: string,
+  newPassword: string,
+) => {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user || user.otp !== otp) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Invalid OTP');
+  }
+
+  if (user.otpExpiry && user.otpExpiry < new Date()) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'OTP has expired');
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+  await prisma.user.update({
+    where: { email },
+    data: {
+      password: hashedPassword,
+      otp: null,
+      otpExpiry: null,
+    },
+  });
+
+  return { message: 'Password reset successful' };
+};
+
+
 export const UserServices = {
   registerUserIntoDB,
   getAllUsersFromDB,
@@ -239,4 +304,6 @@ export const UserServices = {
   changePassword,
   resendUserVerificationEmail,
   verifyUserEmail,
+  verifyOtpAndResetPassword,
+  sendPasswordResetOtp
 };
