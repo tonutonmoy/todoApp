@@ -13,10 +13,7 @@ enum Gender {
   OTHER
   MIXED
   ANY
-
 }
-
-
 
 enum RequestStatus {
   PENDING
@@ -48,170 +45,177 @@ enum UserStatus {
 }
 
 model User {
-  id                          String            @id @default(auto()) @map("_id") @db.ObjectId
-  firstName                   String 
-        
-  lastName                     String
-  surname                      String?
-  email                       String            @unique
-  password                    String
-  role                        UserRoleEnum      @default(USER)
-  status                      UserStatus        @default(ACTIVE)
-  otp                         String?
-  otpExpiry                   DateTime?
-  isEmailVerified             Boolean           @default(true)
-  rememberMe                  Boolean?           @default(true)
-  emailVerificationToken      String?
+  id                            String       @id @default(auto()) @map("_id") @db.ObjectId
+  firstName                     String
+  lastName                      String
+  surname                       String?
+  email                         String       @unique
+  password                      String
+  role                          UserRoleEnum @default(USER)
+  status                        UserStatus   @default(ACTIVE)
+  otp                           String?
+  otpExpiry                     DateTime?
+  isEmailVerified               Boolean      @default(true)
+  rememberMe                    Boolean?     @default(true)
+  emailVerificationToken        String?
   emailVerificationTokenExpires DateTime?
-  birthDate                   DateTime?
-  gender                      Gender?
-  language                    String?
-  school                     String?
-  profilePicture              String?
-  biography                   String?
-  aboutMe                     String[]         
-  instagram                   String?
-  phoneNumber                 String?
-  createdAt                   DateTime          @default(now())
-  updatedAt                   DateTime          @updatedAt
-  termsAndConditions          Boolean?
-  bio                         String?
+  birthDate                     DateTime?
+  gender                        Gender?
+  language                      String?
+  school                        String?
+  profilePicture                String?
+  biography                     String?
+  aboutMe                       String[]
+  instagram                     String?
+  phoneNumber                   String?
+  createdAt                     DateTime     @default(now())
+  updatedAt                     DateTime     @updatedAt
+  termsAndConditions            Boolean?
+  bio                           String?
 
-  listings                    Listing[]
-  requestsSent                Request[]
-  roommates                   Roommate[]
-  savedListings               Saved[]
-  userInterests               UserInterest[]
+  roomMateListing      RoomMateListing[]
+  requestsSent  Request[]
+  roommates     Roommate[]
+  savedListings Saved[]
+  userInterests UserInterest[]
 }
 
 model Interest {
-  id              String          @id @default(auto()) @map("_id") @db.ObjectId
-  name            String          @unique
-  userInterests   UserInterest[]
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  name          String         @unique
+  userInterests UserInterest[]
 }
 
 model UserInterest {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String
-  interestId String
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String @db.ObjectId
+  interestId String @db.ObjectId
 
-  user       User     @relation(fields: [userId], references: [id])
-  interest   Interest @relation(fields: [interestId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+  interest Interest @relation(fields: [interestId], references: [id])
 }
 
-model Listing {
-  id                           String           @id @default(auto()) @map("_id") @db.ObjectId
-  title                        String
-  preview                      String
-  description                  String
-  rentCHF                      Int
-  expensesIncluded             Boolean          @default(true)
-  extraExpenses                String[]
-  availableFrom                DateTime
-  availableUntil               DateTime?
-  rooms                        Float
-  bathrooms                    Int
-  size                         Int?
-  floor                        Int?
-  address                      String
-  streatAndNo                  String
-  postalCode                   String
-  city                         String
-  latitude                     Float
-  longitude                    Float
-  radiusKm                     Int
-  photos                       String[]
-  videoUrl                     String?
-  status                       ListingStatus     @default(PUBLISHED)
-  createdAt                    DateTime          @default(now())
-  expiresAt                    DateTime?
-  available                    String
-  additionalExpenseIncluded    Boolean
-  roommateAgeMin               Int?
-  roommateAgeMax               Int?
-  roommateLanguages            String[]
-  roommateGender               Gender?
-  spaceAndAppliances           String[]
-  comfortAndLeisure            String[]
-  accessAndMobility           String[]
-  houseAtmosphere              String
-  externalGuestsAllowed        String
-  smokingAllowedInOutdoorAreas String
-  cleaningScheduleDefined      String
-  currentlyHavePets            String
-  newPetsAllowed               String
-  cookingWithRoommates         String
-  dinnerWithRoommates          String
-  spendingFreeTimeWithRoommates String
-  language                     String
-  age                          String
+model RoomMateListing {
+  id                            String        @id @default(auto()) @map("_id") @db.ObjectId
+  title                         String?
+  preview                       String?
+  description                   String?
+  rentCHF                       Int?
+  expensesIncluded              Boolean?       @default(true)
+  extraExpenses                 String[]
+  availableFrom                 DateTime?
+  availableUntil                DateTime?
+  rooms                         Float?
+  bathrooms                     Int?
+  size                          Int?
+  floor                         Int?
+  address                       String?
+  streetAndNo                   String?
+  postalCode                    String?
+  city                          String?
+  latitude                      Float?
+  longitude                     Float?
+  radiusKm                      Int?
+  photos                        String[]
+  videoUrl                      String?
+  status                        ListingStatus? @default(PUBLISHED)
+  createdAt                     DateTime?      @default(now())
+  expiresAt                     DateTime?
+  available                     String?
+  additionalExpenseIncluded     Boolean?
+  roommateAgeMin                Int?
+  roommateAgeMax                Int?
+  roommateLanguages             String[]
+  roommateGender                Gender?
+  spaceAndAppliances            String[]
+  comfortAndLeisure             String[]
+  accessAndMobility             String[]
+  houseAtmosphere               String?
+  externalGuestsAllowed         String?
+  smokingAllowedInOutdoorAreas  String?
+  currentlyHavePets             String?
+  newPetsAllowed                String?
+  cookingWithRoommates          String?
+  dinnerWithRoommates           String?
+  language                      String?
+  age                           String?
 
-  ownerId         String
-  owner           User             @relation(fields: [ownerId], references: [id])
-  roommates       Roommate[]
-  requests        Request[]
-  savedBy         Saved[]
+  // Relations
+  manualRooms      AddRoomet[]      @relation("RoomMateListingToManualRooms")
+  ownerId          String           @db.ObjectId
+  owner            User             @relation(fields: [ownerId], references: [id])
+  roommates        Roommate[]
+  requests         Request[]
+  savedBy          Saved[]
   listingAmenities ListingAmenity[]
   listingRules     ListingRule[]
 }
 
+model AddRoomet {
+  id        String          @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String          @unique
+  listingId String          @db.ObjectId
+  listing   RoomMateListing @relation("RoomMateListingToManualRooms", fields: [listingId], references: [id])
+}
+
 model Amenity {
-  id               String            @id @default(auto()) @map("_id") @db.ObjectId
-  name             String            @unique
+  id               String           @id @default(auto()) @map("_id") @db.ObjectId
+  name             String           @unique
   listingAmenities ListingAmenity[]
 }
 
 model ListingAmenity {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  listingId  String
-  amenityId  String
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  listingId String @db.ObjectId
+  amenityId String @db.ObjectId
 
-  listing    Listing  @relation(fields: [listingId], references: [id])
-  amenity    Amenity  @relation(fields: [amenityId], references: [id])
+  listing RoomMateListing @relation(fields: [listingId], references: [id])
+  amenity Amenity         @relation(fields: [amenityId], references: [id])
 }
 
 model LifestyleRule {
-  id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  name         String         @unique
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  name         String        @unique
   listingRules ListingRule[]
 }
 
 model ListingRule {
-  id              String         @id @default(auto()) @map("_id") @db.ObjectId
-  listingId       String
-  lifestyleRuleId String
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  listingId       String @db.ObjectId
+  lifestyleRuleId String @db.ObjectId
 
-  listing         Listing        @relation(fields: [listingId], references: [id])
-  lifestyleRule   LifestyleRule  @relation(fields: [lifestyleRuleId], references: [id])
+  listing       RoomMateListing @relation(fields: [listingId], references: [id])
+  lifestyleRule LifestyleRule   @relation(fields: [lifestyleRuleId], references: [id])
 }
 
 model Roommate {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String
-  listingId String
-  isLeaving Boolean  @default(false)
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String  @db.ObjectId
+  listingId String  @db.ObjectId
+  isLeaving Boolean @default(false)
 
-  user      User     @relation(fields: [userId], references: [id])
-  listing   Listing  @relation(fields: [listingId], references: [id])
+  user    User            @relation(fields: [userId], references: [id])
+  listing RoomMateListing @relation(fields: [listingId], references: [id])
 }
 
 model Request {
   id          String        @id @default(auto()) @map("_id") @db.ObjectId
-  listingId   String
-  senderId    String
+  listingId   String        @db.ObjectId
+  senderId    String        @db.ObjectId
   status      RequestStatus @default(PENDING)
   createdAt   DateTime      @default(now())
   respondedAt DateTime?
 
-  listing     Listing       @relation(fields: [listingId], references: [id])
-  sender      User          @relation(fields: [senderId], references: [id])
+  listing RoomMateListing @relation(fields: [listingId], references: [id])
+  sender  User            @relation(fields: [senderId], references: [id])
 }
 
 model Saved {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String
-  listingId String
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String @db.ObjectId
+  listingId String @db.ObjectId
 
-  user      User     @relation(fields: [userId], references: [id])
-  listing   Listing  @relation(fields: [listingId], references: [id])
+  user    User            @relation(fields: [userId], references: [id])
+  listing RoomMateListing @relation(fields: [listingId], references: [id])
 }
